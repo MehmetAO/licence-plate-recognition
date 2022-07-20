@@ -100,4 +100,4 @@ def main(image_location):
         return listLP
 
 if __name__ == "__main__":
-    main("test.jpg")
+    main()
