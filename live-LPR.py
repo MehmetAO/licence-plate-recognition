@@ -35,7 +35,7 @@ def contouringImage(edged_image): # Contouring the image so we can find a rectan
 
     return contours
 
-def findingPlate(contours, img_location): # Finding rectangle and return it as a tuple
+def findingPlate(contours, image): # Finding rectangle and return it as a tuple
     for c in contours:
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.018 * peri, True)
@@ -51,7 +51,7 @@ def findingPlate(contours, img_location): # Finding rectangle and return it as a
         detected = 1
 
     if detected == 1:
-        cv2.drawContours(importImage(img_location), [screenCnt], -1, (0, 0, 255), 3)
+        cv2.drawContours(image, [screenCnt], -1, (0, 0, 255), 3)
 
     return screenCnt
 
@@ -64,7 +64,7 @@ def localisation(licensePlateRAW): # Removing errors which can be occur because 
             licensePlate.append(i)
     return licensePlate
 
-def main(image_location):
+def main():
     #Setup cam
     camera = PiCamera()
     camera.resolution = (640, 480)
@@ -77,7 +77,7 @@ def main(image_location):
         grayScaledImage = grayScale(image)  # Turning our image gray
         edged = edgingImage(grayScaledImage)  # Emphasize edges
         contour = contouringImage(edged)  # Contouring the edges
-        licensePlate = findingPlate(contour, image_location)  # License plates location
+        licensePlate = findingPlate(contour, image)  # License plates location
 
         # Masking the useless part
         mask = np.zeros(grayScaledImage.shape, np.uint8)
