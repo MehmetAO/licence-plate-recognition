@@ -1,16 +1,29 @@
 # licence-plate-recognition
 
-What is this:
-  This code is part of a larger project. So please don't judge him right now. It does recognise license plates characters and return as a list.
+### The idea
+The idea after this project is an automated garrage door.
 
-The idea: 
-  The idea after this project is an automated garrage door opener.
+### What is does
+When I get in front of garage. It recognise me and open the garage gate for me.
 
-How it will be work:
-  Raspberry pi with a camera search for license plates. When it finds a licence plate, raspi calls "python" gods to use "OCR" black magic and it reads the plate. After a quick check if the plate is correct. Pi calls Arduino to send a input to the relay so the actuator can open the garage gate automaticly
+### How it works
+A camera attached to Raspberry pi processing video real time and looking for license plates. When it find a licese plate, turn that image to characters and compare it with my plate. If the comparison turns "True" it sends a serial input to Arduino which turns the relay on and active the actuator. Finally the actuator runs and open the gate for me.
 
-What stage am I at:
-  I am currently code the licence plate recogniser in python, relay control code for arduino.
+### What Stage am I at
+I am currently optimising
+
+### Which Items You Need
+Raspberry Pi (Preferably 4b)  
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Raspberry_Pi_4_Model_B_-_Side.jpg/1920px-Raspberry_Pi_4_Model_B_-_Side.jpg" width="150" >  
   
-What will be coming next:
-  License plate recognition in live feed from a camera (currently waiting rpi camera order to come). Some fine adjustment in arduino code so the relay work better in real life scenarios.
+Raspberry Pi Camera (Suitable for your needs and environment)  
+<img src="https://m.media-amazon.com/images/I/81c3uxPtJiL._AC_SL1500_.jpg" width="150" >  
+  
+Arduino  
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/38/Arduino_Uno_-_R3.jpg" width="150" >  
+  
+Motor Driver (A driver suitable for your actuator)  
+<img src="https://st3.myideasoft.com/shop/dt/63/myassets/products/195/pr_01_195.jpg?revision=1413734423" width="150" >  
+  
+Motor (Suitable for your power need)  
+<img src="https://image.robotistan.com/nema-23-200-adim-57x76mm-86v-step-motor-15723-38-O.jpeg" width="150" >  
