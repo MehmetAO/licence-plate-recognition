@@ -3,7 +3,7 @@
 ### The idea
 The idea after this project is an automated garrage door.
 
-### What is does
+### What it does
 When I get in front of garage. It recognise me and open the garage gate for me.
 
 ### How it works
