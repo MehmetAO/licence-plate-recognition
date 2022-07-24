@@ -7,7 +7,13 @@ from picamera import PiCamera
 
 # Tesseract location for windows
 # For linux just remove the line
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# Setup cam
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 30
+rawCapture = PiRGBArray(camera, size=(640, 480))
 
 
 def importImage(img_location): # Importing image
@@ -30,12 +36,12 @@ def edgingImage(img): #Edges
 def contouringImage(edged_image): # Contouring the image so we can find a rectangle which will our licence plate
     contours = cv2.findContours(edged_image.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = imutils.grab_contours(contours)
-    contours = sorted(contours, key = cv2.contourArea, reverse = True)[:10]
-    screenCnt = None
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
 
     return contours
 
 def findingPlate(contours, image): # Finding rectangle and return it as a tuple
+    screenCnt = None
     for c in contours:
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.018 * peri, True)
@@ -65,39 +71,41 @@ def localisation(licensePlateRAW): # Removing errors which can be occur because 
     return licensePlate
 
 def main():
-    #Setup cam
-    camera = PiCamera()
-    camera.resolution = (640, 480)
-    camera.framerate = 30
-
-    rawCapture = PiRGBArray(camera, size=(640, 480))
-
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         image = frame.array
-        grayScaledImage = grayScale(image)  # Turning our image gray
-        edged = edgingImage(grayScaledImage)  # Emphasize edges
-        contour = contouringImage(edged)  # Contouring the edges
-        licensePlate = findingPlate(contour, image)  # License plates location
+        cv2.imshow("Frame", image)
+        key = cv2.waitKey(1) & 0xFF
+        rawCapture.truncate(0)
+        if key == ord("s"):
+            grayScaledImage = grayScale(image)  # Turning our image gray
+            edged = edgingImage(grayScaledImage)  # Emphasize edges
+            contour = contouringImage(edged)  # Contouring the edges
+            if findingPlate(contour, image) == "0":
+                print("no plate")
+            else:
+                licensePlate = findingPlate(contour, image)  # License plates location
 
-        # Masking the useless part
-        mask = np.zeros(grayScaledImage.shape, np.uint8)
-        new_image = cv2.drawContours(mask, [licensePlate], 0, 255, -1, )
-        new_image = cv2.bitwise_and(image, image, mask=mask)
+            # Masking the useless part
+            mask = np.zeros(grayScaledImage.shape, np.uint8)
+            new_image = cv2.drawContours(mask, [licensePlate], 0, 255, -1, )
+            new_image = cv2.bitwise_and(image, image, mask=mask)
 
-        # Croping masked area
-        (x, y) = np.where(mask == 255)
-        (topx, topy) = (np.min(x), np.min(y))
-        (bottomx, bottomy) = (np.max(x), np.max(y))
-        Cropped = grayScaledImage[topx:bottomx + 1, topy:bottomy + 1]
+            # Croping masked area
+            (x, y) = np.where(mask == 255)
+            (topx, topy) = (np.min(x), np.min(y))
+            (bottomx, bottomy) = (np.max(x), np.max(y))
+            Cropped = grayScaledImage[topx:bottomx + 1, topy:bottomy + 1]
 
-        # Read the number plate from cropted image
-        plateNumber = pytesseract.image_to_string(Cropped, config='--psm 11')
+            # Read the number plate from cropted image
+            plateNumber = pytesseract.image_to_string(Cropped, config='--psm 11')
 
-        # List version of final data
-        listLP = localisation(plateNumber)
-        print("Araç plakası:", listLP)
+            # List version of final data
+            listLP = localisation(plateNumber)
+            print("Araç plakası:", listLP)
 
-        return listLP
+            return listLP
+
+
 
 if __name__ == "__main__":
     main()
